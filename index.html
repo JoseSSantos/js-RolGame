@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        td{
+            width: 59.89px;
+            height: 59.89px;
+        }
+    </style>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+                                                            //Declaracion de variables
+                tecla="";
+                jugador1="";
+                jugador2="";
+                celdaenemigo="";
+                dado1="";
+                dado2="";
+                movimientos1="";
+                movimientos2="";
+                evida=0;
+                j2dano=0;
+                j1dano=0;
+                vidainicial=0;
+                danorecivido=0;
+
+                var array=[];
+
+            function personajes() {                 //Generacion de personajes y sus estadisticas
+                
+                    // Jugadores
+
+                    jugador1    =   Math.floor(Math.random() * 100);                            //Posicion
+                    j1dano      =   Math.floor((Math.random() * (150 - 100 + 1)) + 100);        //Daño
+
+
+                    jugador2    =   Math.floor(Math.random() * 100);                            //Posicion
+                    j2dano      =   Math.floor((Math.random() * (150 - 100 + 1)) + 100);        //Daño
+                    
+
+                    //Enemigo
+                    celdaenemigo=Math.floor(Math.random()*100);
+                    evida=Math.floor((Math.random() * (1000 - 500 + 1)) + 500);
+                    vidainicial=evida;
+
+                    //Pruebas
+                    console.log("J1 "+j1dano+ " daño");
+                    console.log("J2 "+j2dano+ " daño");
+                    console.log("J1 "+jugador1+" posicion");
+                    console.log("J2 "+jugador2+" posicion");
+                    console.log("Enemigo "+celdaenemigo);
+                    console.log("Vida Enemigo "+evida);
+
+            }
+
+                                    //Generacion de paredes que bloquean el paso
+            function paredes(){
+
+                    array=[];
+                for ( u = 0; u < 20; u++){
+                    numero=Math.floor((Math.random()*(100-1+1))+1);
+                    array.push(numero);
+                    //console.log("Array "+array);
+                    }
+                
+            }
+
+            function fgenerar() {
+                return function () {
+
+                    personajes();
+                    paredes();
+                    $("#evida").html("Vida Enemigo = "+evida);
+                    $("#dano1").html("Daño jugador 1 = "+j1dano);
+                    $("#dano2").html("Daño jugador 2 = "+j2dano);
+                    $("#danorecivido").html("Daño total inflingido = "+danorecivido);
+                    //console.log("daño recivido"+danorecivido);
+                    $("#dado1").html("Jugador 1 = "+0);
+                    $("#dado2").html("Jugador 2 = "+0);
+
+                    var contador=0;
+
+                        //Crear a los jugadores para luego poder moverlos
+                        //falta establecer el punto de partida
+                    
+                    tabla = "";
+                    tabla1 = document.getElementById("tabla");
+                    tabla1.style.height="600px" //cambiamos la altura para que quede igual que la anchura
+
+                    
+                    for (i = 1; i <= 10; i++) {
+                        tabla += "<tr>";
+
+                        for (j = 1; j <= 10; j++) {
+                            tabla += "<td>";
+
+                                if(contador==celdaenemigo && contador!=jugador1 && contador!=jugador2){
+                                    tabla+="&#128009";
+                                }
+                                else if(contador==jugador1 && contador!=jugador2 && contador!=celdaenemigo){
+                                    tabla+="&#128526";
+                                }
+                                else if(contador==jugador2 && contador!=jugador1 && contador!=celdaenemigo){
+                                    tabla+="&#128527";
+                                }
+                                else if(array.includes(contador)){          //Comprobacion de si existe el numero en el array y creacion de la pared
+                                    //console.log("Encontrado");
+                                    tabla+="&#127970";
+                                }
+                                else if(jugador1==jugador2 || jugador1==celdaenemigo || celdaenemigo==jugador2){
+
+                               //     window.alert("Genera otro tablero :)")
+                               //     return null;
+                                        //Intentar hacer que se genere una tabla nueva
+                                        //No se como
+                                }else{
+                            tabla += "";           //aqui iba j * i
+                        }
+                            
+                            tabla += "</td>";
+                            contador+=1;
+                        }
+                        tabla += "</tr>";
+                    }
+                    $("#tabla").html(tabla);
+                }
+            }
+
+            function fborrar() {
+                return function () {
+                    tabla1.style.height="0px" //Borramos la altura de la tabla para que no salga el fondo amarillo
+                    $("#tabla").empty();
+                    $("#evida").html("");
+                    $("#evida").html("Vida Enemigo = "+0);
+                    $("#dano1").html("Daño jugador 1 = "+0);
+                    $("#dano2").html("Daño jugador 2 = "+0);
+                    $("#danorecivido").html("Daño total inflingido = "+danorecivido);
+                    $("#dado1").html("Jugador 1 = "+0);
+                    $("#dado2").html("Jugador 2 = "+0);
+                }
+            }
+
+             function movimiento1(){            //Generacion de numero de movimientos del personaje 1 trucado para que salga mas el 1 en el "dado"
+                 return function(){
+                   dado1=0;
+                   var movimientos1 = Math.floor((Math.random() * 4) + 1);
+                   if (movimientos1==4){
+                       movimientos1=1;
+                   }
+                   console.log(movimientos1);
+                   dado1+=movimientos1;
+                   dado1text="Jugador 1 = "+dado1;
+                   $("#dado1").html(dado1text);
+                   console.log(jugador1);
+            }
+            }
+
+            function movimiento2(){             //Generacion de numero de movimientos del personaje 2 trucado para que salga mas el 1 en el "dado"
+                 return function(){
+                   dado2=0;
+                   var movimientos2 = Math.floor((Math.random() * 4) + 1);
+                   if (movimientos2==4){
+                       movimientos2=1;
+                   }
+                   console.log(movimientos2);
+                   dado2+=movimientos2;
+                   dado2text="Jugador 2 = "+dado2;
+                    $("#dado2").html(dado2text);
+            }
+            }
+
+
+                                                            //Intento de funcion para colocar el texto con las estadisticas (No implementado)
+            function stats(){
+                return function(){
+
+                    evidatext="Vida H = "+evida;
+                    console.log("Vida ha funcionado");
+                    dano1text="Daño jugador 1 = "+j1dano;
+                    dano2text="Daño jugador 2 = "+j2dano2;
+                    danorecivido=vidainicial-evida;
+                    $("#evida").html(evidatext);
+                    console.log("Vida ha funcionado v2");
+                    $("#danorecivido").html(danorecivido);
+                    $("#dano1").html(dano1text);
+                    $("#dano2").html(dano2text);
+
+                }
+            }
+
+
+                                            //Funcion que comprueba si se esta atacando, el daño que se hace y si el enemigo sigue vivo, si no sigue vivo se reinicia
+
+            function atacar(dano){
+
+                console.log("Estoy atacando");
+                evida-=dano;
+                console.log("Vida "+evida);
+                danorecivido+=dano;
+
+                if (evida<=0){
+
+                    $("#evida").html("Vida Enemigo = "+0);
+                    $("#dano1").html("Daño jugador 1 = "+0);
+                    $("#dano2").html("Daño jugador 2 = "+0);
+                    $("#danorecivido").html("Daño total inflingido = "+danorecivido);
+
+
+
+                    $("#dado1").html("Jugador 1 = "+0);
+                    $("#dado2").html("Jugador 2 = "+0);
+
+                    alert("Habeis acabado con el enemigo!!");
+                    personajes();
+                    paredes();
+
+                }
+                
+                
+            }
+                                            //Funcion de movimiento en la que se capta la entrada por teclado de las letras de movimientos
+                                            // W,A,S,D y las flechas
+                                            // y comprueba si la letra es correcta, si se choca con alguna pared al hacer el movimiento o si esta sobre el enemigo
+
+            function moverse(evt){
+                tecla=evt.keyCode;
+                //console.log(evt.keyCode);
+
+                celdaanterior1=jugador1;
+                celdaanterior2=jugador2;
+
+                switch (tecla){
+                    case 38:   
+                            jugador1-=dado1*10;
+                            dado1=0;
+                    break;
+                    case 40:
+                            jugador1+=dado1*10;
+                            dado1=0;
+                    break;
+                    case 39: 
+                            jugador1+=dado1*1;
+                            dado1=0;
+                    break;
+                    case 37:
+                            jugador1-=dado1*1;
+                            dado1=0;
+                    break;
+                    case 87:
+                            jugador2-=dado2*10;
+                            dado2=0;
+                    break;
+                    case 83:
+                            jugador2+=dado2*10;
+                            dado2=0;
+                    break;
+                    case 68:
+                            jugador2+=dado2*1;
+                            dado2=0;
+                    break;
+                    case 65:
+                            jugador2-=dado2*1;
+                            dado2=0;
+                    break;
+                    default:
+                    alert("Se ha equivocado, debe pulsar las flechas del teclado");
+                }
+
+                if(jugador1>=100){
+                    jugador1=celdaanterior1;
+                    console.log("No se puede seguir")
+                }else if(jugador2>100){
+                    jugador2=celdaanterior2;
+                }else if(jugador1<0){
+                    jugador1=celdaanterior1;
+                }
+                else if(jugador2<0){
+                    jugador2=celdaanterior2;
+                }
+                else if(jugador1==celdaenemigo){
+
+                    console.log("Voy a atacar");
+                    jugador1=celdaanterior1;
+                    atacar(j1dano);
+                    }
+                else if(jugador2==celdaenemigo){
+
+                    console.log("Voy a atacar");
+                    jugador2=celdaanterior2;
+                    atacar(j2dano);
+                }
+                else if(array.includes(jugador1)){
+                    jugador1=celdaanterior1;
+                    console.log("Choque");
+                }
+                else if(array.includes(jugador2)){
+                    jugador2=celdaanterior2;
+                }
+                else{
+
+                    actualizar();
+                }
+                actualizar();
+            }
+
+
+
+                                        //Funcion para actualizar el tablero tras cada movimiento de los peronajes manteniendo la disposicion
+            function actualizar(){
+                fborrar();
+ 
+                    $("#evida").html("Vida Enemigo = "+evida);
+                    $("#dano1").html("Daño jugador 1 = "+j1dano);
+                    $("#dano2").html("Daño jugador 2 = "+j2dano);
+                    $("#danorecivido").html("Daño total inflingido = "+danorecivido);
+                    console.log("daño recivido "+danorecivido);
+                var contador=0;
+
+                        //Crear a los jugadores para luego poder moverlos
+                        //falta establecer el punto de partida
+                    
+                    tabla = "";
+                    tabla1 = document.getElementById("tabla");
+                    tabla1.style.height="600px" //cambiamos la altura para que quede igual que la anchura
+
+                    
+                    for (i = 1; i <= 10; i++) {
+                        tabla += "<tr>";
+
+                        for (j = 1; j <= 10; j++) {
+                            tabla += "<td>";
+
+                                if(contador==celdaenemigo && contador!=jugador1 && contador!=jugador2){
+                                    tabla+="&#128009";
+                                }
+                                else if(contador==jugador1 && contador!=jugador2 && contador!=celdaenemigo){
+                                    tabla+="&#128526";
+                                }
+                                else if(contador==jugador2 && contador!=jugador1 && contador!=celdaenemigo){
+                                    tabla+="&#128527";
+                                }
+                                else if(array.includes(contador)){          //Comprobacion de si existe el numero en el array y creacion de la pared
+                                    console.log("Encontrado");
+                                    tabla+="&#127970";
+                                }
+                                else if(jugador1==jugador2 || jugador1==celdaenemigo || celdaenemigo==jugador2){
+
+                                   // window.alert("Genera otro tablero :)")
+                                  //  return null;
+                                        //Intentar hacer que se genere una tabla nueva
+                                        //No se como
+                                }else{
+                            tabla += "";           //aqui iba j * i
+                        }
+                            
+                            tabla += "</td>";
+                            contador+=1;
+                        }
+                        tabla += "</tr>";
+                    }
+                    $("#dado1").html("Jugador 1 = "+0);
+                    $("#dado2").html("Jugador 2 = "+0);
+                    $("#tabla").html(tabla);
+                
+            }
+
+            document.onkeydown=moverse;
+            $("#evida").html("Vida Enemigo = "+evida);
+            $("#dano1").html("Daño jugador 1 = "+j1dano);
+            $("#dano2").html("Daño jugador 2 = "+j2dano);
+            $("#danorecivido").html("Daño total inflingido = "+danorecivido);
+            $("#btnGenerar").click(fgenerar());
+            $("#btnBorrar").click(fborrar());
+            $("#btnMovimiento1").click(movimiento1());
+            $("#btnMovimiento2").click(movimiento2());
+
+
+        });
+    </script>
+
+    <title>Document</title>
+</head>
+<body>
+    <div id="general" style="background-color: grey;height: 900px; margin-left:5%; margin-right: 5%;">
+
+
+    <h1 style="text-align: center; margin-top: 1%;">Juego de ROL</h1>
+    
+    <div id="botones" style="text-align: center; margin-top: 2%;margin-bottom: 1%;">
+
+    <input type="button" value="Crear tablero" id="btnGenerar">
+    <input type="button" value="Borrar tablero" id="btnBorrar">
+
+    </div>
+
+    <div id="datos" class=" mt-5"style="width: 300px;height: 300px; background-color: aqua; float :right; margin-right: 5%;">
+        <br>
+        <p id="evida" style="text-align: center;"></p>
+        <p id="dano1" style="text-align: center;"></p>
+        <p id="dano2" style="text-align: center;"></p>
+        <p id="danorecivido" style="text-align: center;"></p>
+
+    </div>
+
+    <div id="table">
+
+    <table class="table table-bordered table-warning table-striped mx-auto mt-5" style="width: 600px; text-align: center;" id="tabla"></table>
+    
+    </div>
+
+
+    <div id="botones" style="text-align: center; margin-top: 1%;margin-bottom: 1%;">
+
+    <input type="button" value="Jugador 1" id="btnMovimiento1">
+    <input type="button" value="Jugador 2" id="btnMovimiento2">
+
+    </div>
+    <div>
+        <p id="dado1" style="text-align: center;">
+
+        </p>
+    
+        <p id="dado2" Style="text-align: center;">
+
+        </p>
+    </div>
+
+
+</div>
+
+
+<div id="explicacion">
+    <h2 style="text-align: center; margin-top: 15px; margin-bottom: 15px;">Explicacion</h2>
+    <h4 style="text-align: center;">Generación</h4>
+    <p style="text-align: center;">Primero deberemos generar el tablero con el botón crear tablero.<br>
+    Al terminar una partida el mapa cambiará a otro completamente distinto para seguir jugando, si quieres borrar el tablero debes darle al boton borrar tablero.</p>
+
+    <h4 style="text-align: center;">Movimiento</h4>
+    <p style="text-align: center;">Los jugadores estan representados con los emoticonos siendo el jugador 1 el que lleva las gafas de sol y el jugador 2 el de la sonrisa.</p>
+    <p style="text-align: center;">El jugador 1 se movera con las flechas de direccion y el jugador 2 con W, A, S y D</p>
+    <p style="text-align: center;">El numero que salga en el dado sera la distancia que te moveras en el tablero, si el enemigo se encuentra en esa posicion recibirá el daño,<br>
+    si hay una pared (representada con el emoticono del edicifio) te quedaras en la posicion actual perdiendo el turno.
+    </p>
+
+</div>
+</body>
+</html>
