@@ -32,6 +32,8 @@
                 danorecivido=0;
                 var array=[];
 
+
+            
             function personajes() {                 //Generacion de personajes y sus estadisticas
                 
                     // Jugadores
@@ -330,6 +332,14 @@
             $("#btnBorrar").click(fborrar());
             $("#btnMovimiento1").click(movimiento1());
             $("#btnMovimiento2").click(movimiento2());
+
+
+            window.addEventListener("keydown", function(e) {
+            // space and arrow keys
+            if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+            e.preventDefault();
+            }
+}, false);
 
 
         });
